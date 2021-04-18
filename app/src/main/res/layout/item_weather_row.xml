@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="weather"
+            type="com.wotosts.recruit_backpacker.model.WeatherRow" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvLocal"
+            android:layout_width="@dimen/local_width"
+            android:layout_height="0dp"
+            android:background="@drawable/background_table_local"
+            android:text="@{weather.local}"
+            android:textColor="@color/local_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/weatherToday"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <include
+            android:id="@+id/weatherToday"
+            layout="@layout/include_weather"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/weatherTomorrow"
+            app:layout_constraintStart_toEndOf="@+id/tvLocal"
+            app:layout_constraintTop_toTopOf="parent"
+            app:weather="@{weather.today}" />
+
+        <include
+            android:id="@+id/weatherTomorrow"
+            layout="@layout/include_weather"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/weatherToday"
+            app:layout_constraintTop_toTopOf="parent"
+            app:weather="@{weather.tomorrow}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

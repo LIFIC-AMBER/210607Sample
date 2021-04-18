@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/header_height"
+        android:background="@color/header_background"
+        android:foreground="@drawable/divider">
+
+        <TextView
+            android:id="@+id/tvLocal"
+            android:layout_width="@dimen/local_width"
+            android:layout_height="0dp"
+            android:background="@drawable/background_table_local"
+            android:text="@string/location"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvToday"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/background_table_weather"
+            android:text="@string/today"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tvTomorrow"
+            app:layout_constraintStart_toEndOf="@+id/tvLocal"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvTomorrow"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/background_table_weather"
+            android:text="@string/tomorrow"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvToday"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
