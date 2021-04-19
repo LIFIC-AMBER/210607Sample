@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_table_weather"
-        android:padding="8dp">
+        android:padding="10dp">
 
         <ImageView
             android:id="@+id/ivState"
@@ -25,8 +25,8 @@
         <TextView
             android:id="@+id/tvStateName"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:gravity="start|center_vertical"
             android:text="@{weather.stateName}"
             app:layout_constraintBottom_toTopOf="@+id/tvTemp"
@@ -34,14 +34,15 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/ivState"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="spread_inside" />
+            app:layout_constraintVertical_chainStyle="spread" />
 
         <TextView
             android:id="@+id/tvTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:textColor="@color/red_800"
-            app:layout_constraintBottom_toBottomOf="@+id/ivState"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tvStateName"
             app:layout_constraintTop_toBottomOf="@+id/tvStateName"
             app:unit="@{@string/unit_temperature}"
@@ -51,13 +52,14 @@
             android:id="@+id/tvHumidity"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="10dp"
             android:gravity="start|center_vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/tvTemp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/tvTemp"
             app:layout_constraintTop_toBottomOf="@+id/tvStateName"
+            app:layout_constraintVertical_bias="1.0"
             app:unit="@{@string/unit_humidity}"
             app:value="@{weather.humidity}" />
     </androidx.constraintlayout.widget.ConstraintLayout>

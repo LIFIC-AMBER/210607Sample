@@ -13,6 +13,7 @@
             android:layout_width="@dimen/local_width"
             android:layout_height="0dp"
             android:background="@drawable/background_table_local"
+            android:padding="@dimen/local_padding"
             android:text="@string/location"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
