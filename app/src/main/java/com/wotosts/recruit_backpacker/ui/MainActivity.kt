@@ -3,6 +3,7 @@ package com.wotosts.recruit_backpacker.ui
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
@@ -40,8 +41,14 @@ class MainActivity : AppCompatActivity() {
         binding.list.adapter = adapter
 
         viewModel.weatherListLiveData.observe(this, Observer {
-            adapter.itemList = it as MutableList<Any>
-            if(it.isNotEmpty()) {
+            if(it != null) {
+                if (it.isNotEmpty()) {
+                    binding.swipe.isRefreshing = false
+                    binding.progressBar.visibility = View.GONE
+                }
+                adapter.itemList = it as MutableList<Any>
+            } else {
+                Toast.makeText(this, getString(R.string.refresh_error), Toast.LENGTH_SHORT).show()
                 binding.swipe.isRefreshing = false
                 binding.progressBar.visibility = View.GONE
             }

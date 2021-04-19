@@ -1,9 +1,9 @@
 package com.wotosts.recruit_backpacker.ui
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.wotosts.recruit_backpacker.model.WeatherRow
 import com.wotosts.recruit_backpacker.repository.WeatherRepository
+import com.wotosts.recruit_backpacker.utils.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 private const val TAG = "MainViewModel"
 
 class MainViewModel(private val weatherRepository: WeatherRepository) : ViewModel() {
-    private val _weatherListLiveData = MutableLiveData<List<WeatherRow>>()
-    val weatherListLiveData = _weatherListLiveData as LiveData<List<WeatherRow>>
+    private val _weatherListLiveData = MutableLiveData<List<WeatherRow>?>()
+    val weatherListLiveData = _weatherListLiveData as LiveData<List<WeatherRow>?>
 
     init {
         refreshWeather()
@@ -22,28 +22,33 @@ class MainViewModel(private val weatherRepository: WeatherRepository) : ViewMode
     fun refreshWeather() {
         _weatherListLiveData.value = mutableListOf()
         viewModelScope.launch(Dispatchers.IO) {
-            val weatherList = mutableListOf<WeatherRow>()
-            val localList = weatherRepository.getLocalList()        // 따로 저장해두기..
-            localList.data?.let {
-                it.map {
-                    async { weatherRepository.getWeathers(it) }
-                }.awaitAll()
-                    .forEach { resource ->
-                        resource.data?.let { weatherDTO ->
-                            Log.d(TAG, "weatherRow created")
-                            weatherList.add(WeatherRow(
-                                weatherDTO.title,
-                                weatherDTO.weatherList[0],
-                                weatherDTO.weatherList[1]
-                            ))
-                        }
-                    }
+            when (val localList = weatherRepository.getLocalList()) {
+                is Resource.Success -> {
+                    val weatherList = mutableListOf<WeatherRow>()
+                    localList.data?.let { list ->
+                        list.map { async { weatherRepository.getWeather(it) } }
+                            .awaitAll()
+                            .forEach { resource ->
+                                resource.data?.let { weatherDTO ->
+                                    //Log.d(TAG, "weatherRow created")
+                                    weatherList.add(
+                                        WeatherRow(
+                                            weatherDTO.title,
+                                            weatherDTO.weatherList[0],
+                                            weatherDTO.weatherList[1]
+                                        )
+                                    )
+                                }
+                            }
 
-                _weatherListLiveData.postValue(weatherList)
+                        _weatherListLiveData.postValue(if (weatherList.size == 0) null else weatherList)
+                    }
+                }
+                is Resource.Error -> {
+                    _weatherListLiveData.postValue(null)
+                }
             }
         }
-
-        Log.d(TAG, "refresh")
     }
 }
 
