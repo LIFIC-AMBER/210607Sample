@@ -18,8 +18,9 @@ class WeatherAdapter(list: MutableList<Any>) :
     RecyclerView.Adapter<WeatherAdapter.ViewHolder<*>>() {
     var itemList = list
         set(value) {
-            field = value.apply {
-                if (isNotEmpty()) add(0, Any())
+            field = mutableListOf<Any>().apply{
+                if (value.isNotEmpty()) add(Any())
+                addAll(value)
             }
 
             notifyDataSetChanged()
