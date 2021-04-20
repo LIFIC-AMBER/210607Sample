@@ -52,8 +52,7 @@ class MainViewModelTest {
         //MockitoAnnotations.openMocks(this)
         viewModel = MainViewModel(
             application,
-            mockWeatherRepository,
-            coroutineTestRule.testDispatcher
+            mockWeatherRepository
         ).also {
             it.weatherListLiveData.observeForever(observer)
         }

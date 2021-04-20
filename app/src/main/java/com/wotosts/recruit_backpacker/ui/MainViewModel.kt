@@ -13,8 +13,7 @@ import kotlinx.coroutines.*
 
 class MainViewModel(
     application: Application,
-    private val weatherRepository: WeatherRepository,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val weatherRepository: WeatherRepository
 ) : AndroidViewModel(application) {
     private val _weatherListLiveData = MutableLiveData<List<WeatherRow>>()
     val weatherListLiveData = _weatherListLiveData as LiveData<List<WeatherRow>>
@@ -24,7 +23,7 @@ class MainViewModel(
 
     fun refreshWeather() {
         if (_weatherListLiveData.value != null) _weatherListLiveData.value = mutableListOf()
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch {
             val weatherList = mutableListOf<WeatherRow>()
             when (val localList = weatherRepository.getLocalList()) {
                 is Resource.Success ->
