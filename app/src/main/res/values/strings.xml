@@ -8,4 +8,5 @@
     <string name="unit_temperature">°C</string>
 
     <string name="refresh_error">정보를 불러오는데 실패하였습니다.</string>
+    <string name="refresh_some_error">일부 정보를 불러오는데 실패하였습니다.</string>
 </resources>

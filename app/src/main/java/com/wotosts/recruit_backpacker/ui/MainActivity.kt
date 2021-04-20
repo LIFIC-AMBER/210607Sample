@@ -2,7 +2,7 @@ package com.wotosts.recruit_backpacker.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
+import android.text.TextUtils
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.res.ResourcesCompat
@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels {
         MainViewModelFactory(
+            application,
             WeatherRepository(weatherService)
         )
     }
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.apply {
             lifecycleOwner = this@MainActivity
-            vieWModel = viewModel
+            vieWModel = viewModel.also { it.refreshWeather() }
         }
 
         DividerItemDecoration(this, DividerItemDecoration.VERTICAL).run {
@@ -41,17 +42,12 @@ class MainActivity : AppCompatActivity() {
         binding.list.adapter = adapter
 
         viewModel.weatherListLiveData.observe(this, Observer {
-            if(it != null) {
-                if (it.isNotEmpty()) {
-                    binding.swipe.isRefreshing = false
-                    binding.progressBar.visibility = View.GONE
-                }
-                adapter.itemList = it as MutableList<Any>
-            } else {
-                Toast.makeText(this, getString(R.string.refresh_error), Toast.LENGTH_SHORT).show()
-                binding.swipe.isRefreshing = false
-                binding.progressBar.visibility = View.GONE
-            }
+            adapter.itemList = it as MutableList<Any>
+        })
+
+        viewModel.refreshEvent.observe(this, Observer {
+            if(!TextUtils.isEmpty(it.getContentIfNotHandled())) Toast.makeText(this, it.peekContent(), Toast.LENGTH_LONG).show()
+            binding.swipe.isRefreshing = false
         })
     }
 }
