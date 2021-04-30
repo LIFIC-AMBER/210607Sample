@@ -16,10 +16,10 @@ class MainViewModel(
     private val weatherRepository: WeatherRepository
 ) : AndroidViewModel(application) {
     private val _weatherListLiveData = MutableLiveData<List<WeatherRow>>()
-    val weatherListLiveData = _weatherListLiveData as LiveData<List<WeatherRow>>
+    val weatherListLiveData: LiveData<List<WeatherRow>> = _weatherListLiveData
 
     private val _refreshEvent = MutableLiveData<Event<String>>()
-    val refreshEvent = _refreshEvent as LiveData<Event<String>>
+    val refreshEvent: LiveData<Event<String>> = _refreshEvent
 
     fun refreshWeather() {
         if (_weatherListLiveData.value != null) _weatherListLiveData.value = mutableListOf()

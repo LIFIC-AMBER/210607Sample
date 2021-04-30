@@ -76,9 +76,9 @@ class MainViewModelTest {
 
             viewModel.refreshWeather()
 
-            verify(observer).onChanged(argumentCaptor.capture())
+            //verify(observer).onChanged(argumentCaptor.capture())
             verify(mockWeatherRepository, never()).getWeather(any())
-            Assert.assertEquals(0, (argumentCaptor.value as List<*>).size)
+            Assert.assertEquals(0, viewModel.weatherListLiveData.getOrAwaitValue().size)
             Assert.assertEquals(
                 ERROR,
                 viewModel.refreshEvent.getOrAwaitValue().peekContent()
@@ -97,9 +97,9 @@ class MainViewModelTest {
             }
             viewModel.refreshWeather()
 
-            verify(observer).onChanged(argumentCaptor.capture())
+            //verify(observer).onChanged(argumentCaptor.capture())
             verify(mockWeatherRepository, times(localList.size)).getWeather(any())
-            Assert.assertEquals(0, argumentCaptor.value.size)
+            Assert.assertEquals(0, viewModel.weatherListLiveData.getOrAwaitValue().size)
             Assert.assertEquals(
                 ERROR,
                 viewModel.refreshEvent.getOrAwaitValue().peekContent()
@@ -124,9 +124,9 @@ class MainViewModelTest {
             }
             viewModel.refreshWeather()
 
-            verify(observer).onChanged(argumentCaptor.capture())
+            //verify(observer).onChanged(argumentCaptor.capture())
             verify(mockWeatherRepository, times(localList.size)).getWeather(any())
-            Assert.assertEquals(1, (argumentCaptor.value as List<*>).size)
+            Assert.assertEquals(1, viewModel.weatherListLiveData.getOrAwaitValue().size)
             Assert.assertEquals(
                 SOME_ERROR,
                 viewModel.refreshEvent.getOrAwaitValue().peekContent()
