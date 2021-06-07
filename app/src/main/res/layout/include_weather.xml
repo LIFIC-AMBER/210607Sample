@@ -4,7 +4,7 @@
     <data>
         <variable
             name="weather"
-            type="com.wotosts.recruit_backpacker.model.Weather" />
+            type="com.amber.sample.model.Weather" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

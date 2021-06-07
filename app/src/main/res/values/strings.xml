@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">recruit-backpacker</string>
+    <string name="app_name">Lific-Sample</string>
+    <string name="menu_weather">Weather</string>
+    <string name="menu_motion">Motion</string>
+
     <string name="title">Local Weather</string>
     <string name="location">Local</string>
     <string name="today">Today</string>
@@ -9,4 +12,6 @@
 
     <string name="refresh_error">정보를 불러오는데 실패하였습니다.</string>
     <string name="refresh_some_error">일부 정보를 불러오는데 실패하였습니다.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
