@@ -3,15 +3,12 @@
 
 
 ![Screenshot](/screenshots/Screenshot_1.png)]
-![Screenshot](/screenshots/Screenshot_2.png)]
-![Screenshot](/screenshots/Screenshot_3.png)]
-![Screenshot](/screenshots/Screenshot_4.png)]
 
 ---
 
 ### 적용된 기술
 1. Bottom Navigation View + Navigation Extensions
-2. Kotlin flow + LiveData
+2. Kotlin coroutine + flow + LiveData -> 추후 StateFlow 적용해보기
 3. Motion Layout
 4. 테스트코드(ViewModel)
 
