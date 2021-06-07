@@ -7,49 +7,54 @@ import com.amber.sample.repository.WeatherRepository
 import com.amber.sample.utils.Event
 import com.amber.sample.utils.Resource
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.map
 
 //private const val TAG = "MainViewModel"
 
 class WeatherViewModel(
     private val weatherRepository: WeatherRepository
 ) : ViewModel() {
+    private val _weatherListLiveData = MutableLiveData<List<WeatherRow>>()
+    val weatherListLiveData: LiveData<List<WeatherRow>> = _weatherListLiveData
+
     private val _refreshEvent = MutableLiveData<Event<State>>()
     val refreshEvent: LiveData<Event<State>> = _refreshEvent
-
-    private val _weatherListLiveData = MutableLiveData<List<WeatherRow>>()
-    val weatherListLiveData: LiveData<List<WeatherRow>> = weatherRepository.getWeather().map {
-        when (it) {
-            is Resource.Loading -> {
-                _refreshEvent.postValue(Event(State.Loading))
-                listOf<WeatherRow>()
-            }
-            is Resource.Error -> {
-                _refreshEvent.postValue(Event(State.Failed(R.string.refresh_error)))
-                listOf<WeatherRow>()
-            }
-            is Resource.Success -> {
-                if (it.data == null) {
-                    _refreshEvent.postValue(Event(State.Failed(R.string.refresh_error)))
-                    listOf<WeatherRow>()
-                } else {
-                    _refreshEvent.postValue(Event(State.Success))
-                    it.data.map { dto ->
-                        WeatherRow(
-                            dto.title,
-                            dto.weatherList[0],
-                            dto.weatherList[1]
-                        )
-                    }
-                }
-            }
-        }
-    }.asLiveData(Dispatchers.IO)
 
     fun refreshWeather() {
         if (_weatherListLiveData.value != null) _weatherListLiveData.value = mutableListOf()
         viewModelScope.launch {
+            _refreshEvent.value = Event(State.Loading)
             val weatherList = mutableListOf<WeatherRow>()
+            when (val localList = weatherRepository.getLocalList()) {
+                is Resource.Success ->
+                    with(localList.data!!) {
+                        map { async { weatherRepository.getWeather(it) } }
+                            .awaitAll()
+                            .forEach { resource ->
+                                resource.data?.let { weatherDTO ->
+                                    //Log.d(TAG, "weatherRow created")
+                                    weatherList.add(
+                                        WeatherRow(
+                                            weatherDTO.title,
+                                            weatherDTO.weatherList[0],
+                                            weatherDTO.weatherList[1]
+                                        )
+                                    )
+                                }
+                            }
+
+                        _refreshEvent.value = when {
+                            isEmpty() || (isNotEmpty() && weatherList.size == 0) -> Event(
+                                State.Failed(
+                                    R.string.refresh_error
+                                )
+                            )
+                            size > weatherList.size -> Event(State.Failed(R.string.refresh_some_error))
+                            else -> Event(State.Success)
+                        }
+                    }
+                is Resource.Error -> _refreshEvent.value = Event(State.Failed(R.string.refresh_error))
+            }
+            _weatherListLiveData.postValue(weatherList)
         }
     }
 }
