@@ -2,7 +2,8 @@
 날씨 API 를 이용한 샘플 앱
 
 
-![Screenshot](/screenshots/Screenshot_1.png)]
+![Screenshot](/screenshots/Screenshot_1.png)
+![Screenshot](/screenshots/Screenshot_2.png)
 
 ---
 
