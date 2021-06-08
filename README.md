@@ -3,9 +3,6 @@
 앞으로 앱 개발할 때 사용해보고 싶은 기술들을 간단하게 적용한 앱으로, 참고용으로만 봐주세요.
 
 
-![Screenshot](/screenshots/Screenshot_1.png)
-![Screenshot](/screenshots/Screenshot_2.png)
-
 ---
 
 ### 적용된 기술
