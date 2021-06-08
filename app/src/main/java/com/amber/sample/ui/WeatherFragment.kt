@@ -40,8 +40,6 @@ class WeatherFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.refreshWeather()
-
         DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL).run {
             ResourcesCompat.getDrawable(resources, R.drawable.divider, requireActivity().theme)
                 ?.let { setDrawable(it) }

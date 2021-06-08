@@ -19,6 +19,10 @@ class WeatherViewModel(
     private val _refreshEvent = MutableLiveData<Event<State>>()
     val refreshEvent: LiveData<Event<State>> = _refreshEvent
 
+    init {
+        refreshWeather()
+    }
+
     fun refreshWeather() {
         if (_weatherListLiveData.value != null) _weatherListLiveData.value = mutableListOf()
         viewModelScope.launch {
@@ -43,11 +47,7 @@ class WeatherViewModel(
                             }
 
                         _refreshEvent.value = when {
-                            isEmpty() || (isNotEmpty() && weatherList.size == 0) -> Event(
-                                State.Failed(
-                                    R.string.refresh_error
-                                )
-                            )
+                            isEmpty() || (isNotEmpty() && weatherList.size == 0) -> Event(State.Failed(R.string.refresh_error))
                             size > weatherList.size -> Event(State.Failed(R.string.refresh_some_error))
                             else -> Event(State.Success)
                         }
