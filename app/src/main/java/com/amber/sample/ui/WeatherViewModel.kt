@@ -1,13 +1,19 @@
 package com.amber.sample.ui
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.amber.sample.R
-import com.amber.sample.model.Weather
+import com.amber.sample.model.Local
 import com.amber.sample.model.WeatherRow
+import com.amber.sample.model.toWeatherRow
 import com.amber.sample.repository.WeatherRepository
 import com.amber.sample.utils.Event
 import com.amber.sample.utils.Resource
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlin.system.measureTimeMillis
 
 //private const val TAG = "MainViewModel"
 
@@ -23,38 +29,55 @@ class WeatherViewModel(
     private val _clickedWeather = MutableLiveData<Event<WeatherRow>>()
     val clickedWeather: LiveData<Event<WeatherRow>> = _clickedWeather
 
+    @FlowPreview
     fun refreshWeather() {
         viewModelScope.launch {
-            _refreshEvent.value = Event(State.Loading)
-            val weatherList = mutableListOf<WeatherRow>()
-            when (val localList = weatherRepository.getLocalList()) {
-                is Resource.Success ->
-                    with(localList.data!!) {
-                        map { async { weatherRepository.getWeather(it) } }
-                            .awaitAll()
-                            .forEach { resource ->
-                                resource.data?.let { weatherDTO ->
-                                    //Log.d(TAG, "weatherRow created")
-                                    weatherList.add(
-                                        WeatherRow(
-                                            weatherDTO.title,
-                                            weatherDTO.weatherList[0],
-                                            weatherDTO.weatherList[1]
-                                        )
-                                    )
+            val time = measureTimeMillis {
+                _refreshEvent.value = Event(State.Loading)
+                val weatherList = mutableListOf<WeatherRow>()
+                weatherRepository.getLocalList()
+                    .collect {
+                        when (it) {
+                            is Resource.Success -> {
+                                it.data?.let { localList ->
+                                    localList.asFlow()
+                                        .flatMapMerge(concurrency = localList.size) { local ->
+                                            weatherRepository.getWeather(local)
+                                        }.collect { resource ->
+                                            resource.data?.let { weatherDTO ->
+                                                //Log.d(TAG, "weatherRow created")
+                                                weatherList.add(weatherDTO.toWeatherRow())
+                                            }
+                                        }
+
+                                    _refreshEvent.postValue(getWeatherEvent(localList, weatherList))
                                 }
                             }
-
-                        _refreshEvent.value = when {
-                            isEmpty() || (isNotEmpty() && weatherList.size == 0) -> Event(State.Failed(R.string.refresh_error))
-                            size > weatherList.size -> Event(State.Failed(R.string.refresh_some_error))
-                            else -> Event(State.Success)
+                            is Resource.Error -> {
+                                _refreshEvent.value = Event(State.Failed(R.string.refresh_error))
+                            }
                         }
                     }
-                is Resource.Error -> _refreshEvent.value = Event(State.Failed(R.string.refresh_error))
+
+                _weatherListLiveData.value = weatherList
             }
-            _weatherListLiveData.value = weatherList
+
+            Log.d("time", "${time / 1000f}")
         }
+    }
+
+    private fun getWeatherEvent(localList: List<Local>, weatherRowList: List<WeatherRow>) = when {
+        localList.isEmpty() || weatherRowList.isEmpty() -> Event(
+            State.Failed(
+                R.string.refresh_error
+            )
+        )
+        localList.size > weatherRowList.size -> Event(
+            State.Failed(
+                R.string.refresh_some_error
+            )
+        )
+        else -> Event(State.Success)
     }
 
     fun onClickWeather(weatherRow: WeatherRow) {
