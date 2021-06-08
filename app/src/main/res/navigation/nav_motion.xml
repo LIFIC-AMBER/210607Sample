@@ -9,5 +9,14 @@
         android:id="@+id/motionFragment"
         android:name="com.amber.sample.ui.MotionFragment"
         android:label="fragment_motion"
-        tools:layout="@layout/fragment_motion" />
+        tools:layout="@layout/fragment_motion" >
+        <action
+            android:id="@+id/action_motionFragment_to_backStackFragment2"
+            app:destination="@id/backStackFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/backStackFragment2"
+        android:name="com.amber.sample.ui.BackStackFragment"
+        android:label="fragment_back_stack"
+        tools:layout="@layout/fragment_back_stack" />
 </navigation>
