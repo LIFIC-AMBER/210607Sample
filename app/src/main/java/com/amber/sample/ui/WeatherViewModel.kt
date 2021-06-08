@@ -19,12 +19,7 @@ class WeatherViewModel(
     private val _refreshEvent = MutableLiveData<Event<State>>()
     val refreshEvent: LiveData<Event<State>> = _refreshEvent
 
-    init {
-        refreshWeather()
-    }
-
     fun refreshWeather() {
-        if (_weatherListLiveData.value != null) _weatherListLiveData.value = mutableListOf()
         viewModelScope.launch {
             _refreshEvent.value = Event(State.Loading)
             val weatherList = mutableListOf<WeatherRow>()
@@ -54,7 +49,7 @@ class WeatherViewModel(
                     }
                 is Resource.Error -> _refreshEvent.value = Event(State.Failed(R.string.refresh_error))
             }
-            _weatherListLiveData.postValue(weatherList)
+            _weatherListLiveData.value = weatherList
         }
     }
 }
