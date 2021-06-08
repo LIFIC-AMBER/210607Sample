@@ -10,9 +10,7 @@ import com.amber.sample.repository.WeatherRepository
 import com.amber.sample.utils.Event
 import com.amber.sample.utils.Resource
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.*
 import kotlin.system.measureTimeMillis
 
 //private const val TAG = "MainViewModel"
@@ -20,14 +18,14 @@ import kotlin.system.measureTimeMillis
 class WeatherViewModel(
     private val weatherRepository: WeatherRepository
 ) : ViewModel() {
-    private val _weatherListLiveData = MutableLiveData<List<WeatherRow>>()
-    val weatherListLiveData: LiveData<List<WeatherRow>> = _weatherListLiveData
+    private val _weatherListLiveData = MutableStateFlow<List<WeatherRow>>(listOf())
+    val weatherListLiveData: StateFlow<List<WeatherRow>> = _weatherListLiveData
 
-    private val _refreshEvent = MutableLiveData<Event<State>>()
-    val refreshEvent: LiveData<Event<State>> = _refreshEvent
+    private val _refreshEvent = MutableStateFlow<Event<State>>(Event(State.Loading))
+    val refreshEvent: StateFlow<Event<State>> = _refreshEvent
 
-    private val _clickedWeather = MutableLiveData<Event<WeatherRow>>()
-    val clickedWeather: LiveData<Event<WeatherRow>> = _clickedWeather
+    private val _clickedWeather = MutableStateFlow<Event<WeatherRow?>>(Event(null))
+    val clickedWeather: StateFlow<Event<WeatherRow?>> = _clickedWeather
 
     @FlowPreview
     fun refreshWeather() {
@@ -50,7 +48,8 @@ class WeatherViewModel(
                                             }
                                         }
 
-                                    _refreshEvent.postValue(getWeatherEvent(localList, weatherList))
+                                    _refreshEvent.value = getWeatherEvent(localList, weatherList)
+                                    //_refreshEvent.postValue(getWeatherEvent(localList, weatherList))
                                 }
                             }
                             is Resource.Error -> {
