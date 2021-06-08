@@ -14,7 +14,7 @@ object ViewType {
     const val WEATHER = 1
 }
 
-class WeatherAdapter(list: MutableList<Any>) :
+class WeatherAdapter(list: MutableList<Any>, val viewModel: WeatherViewModel) :
     RecyclerView.Adapter<WeatherAdapter.ViewHolder<*>>() {
     var itemList = list
         set(value) {
@@ -74,6 +74,7 @@ class WeatherAdapter(list: MutableList<Any>) :
         ViewHolder<WeatherRow>(binding) {
         override fun onBind(item: WeatherRow) {
             binding.weather = item
+            binding.viewModel = viewModel
         }
     }
 }

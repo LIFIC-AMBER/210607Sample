@@ -6,11 +6,16 @@
         <variable
             name="weather"
             type="com.amber.sample.model.WeatherRow" />
+
+        <variable
+            name="viewModel"
+            type="com.amber.sample.ui.WeatherViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.onClickWeather(weather)}">
 
         <TextView
             android:id="@+id/tvLocal"

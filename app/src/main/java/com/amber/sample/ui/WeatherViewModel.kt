@@ -2,6 +2,7 @@ package com.amber.sample.ui
 
 import androidx.lifecycle.*
 import com.amber.sample.R
+import com.amber.sample.model.Weather
 import com.amber.sample.model.WeatherRow
 import com.amber.sample.repository.WeatherRepository
 import com.amber.sample.utils.Event
@@ -18,6 +19,9 @@ class WeatherViewModel(
 
     private val _refreshEvent = MutableLiveData<Event<State>>()
     val refreshEvent: LiveData<Event<State>> = _refreshEvent
+
+    private val _clickedWeather = MutableLiveData<Event<WeatherRow>>()
+    val clickedWeather: LiveData<Event<WeatherRow>> = _clickedWeather
 
     fun refreshWeather() {
         viewModelScope.launch {
@@ -51,6 +55,10 @@ class WeatherViewModel(
             }
             _weatherListLiveData.value = weatherList
         }
+    }
+
+    fun onClickWeather(weatherRow: WeatherRow) {
+        _clickedWeather.value = Event(weatherRow)
     }
 }
 
