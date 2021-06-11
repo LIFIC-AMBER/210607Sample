@@ -17,13 +17,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.amber.sample.R
 import com.amber.sample.databinding.FragmentWeatherBinding
 import com.amber.sample.repository.WeatherRepository
+import com.amber.sample.repository.WeatherUseCase
 import com.amber.sample.utils.NetworkUtil
+import kotlinx.coroutines.Dispatchers
 
-class WeatherFragment: Fragment() {
+class WeatherFragment : Fragment() {
     private lateinit var binding: FragmentWeatherBinding
     private val viewModel: WeatherViewModel by viewModels {
         MainViewModelFactory(
-            WeatherRepository(NetworkUtil.weatherService)
+            WeatherUseCase(WeatherRepository(NetworkUtil.weatherService), Dispatchers.IO)
         )
     }
 
@@ -68,15 +70,19 @@ class WeatherFragment: Fragment() {
                         binding.swipe.isRefreshing = false
                     }
                     is State.Failed -> {
-                        Toast.makeText(requireContext(), getString(it.errorMsg), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(it.errorMsg), Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
         })
 
-        viewModel.clickedWeather.observe(viewLifecycleOwner, Observer {  event ->
+        viewModel.clickedWeather.observe(viewLifecycleOwner, Observer { event ->
             event.getContentIfNotHandled()?.let {
-                findNavController().navigate(R.id.backStackFragment, bundleOf(BackStackFragment.KEY_STR to it.toString()))
+                findNavController().navigate(
+                    R.id.backStackFragment,
+                    bundleOf(BackStackFragment.KEY_STR to it.toString())
+                )
             }
         })
     }

@@ -24,3 +24,6 @@ data class Local(
     val title: String,
     val woeid: Long
 )
+
+
+fun WeatherDTO.toWeatherRow() = WeatherRow(title, weatherList[0], weatherList[1])

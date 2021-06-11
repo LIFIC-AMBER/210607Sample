@@ -2,9 +2,8 @@ package com.amber.sample.ui
 
 import androidx.lifecycle.*
 import com.amber.sample.R
-import com.amber.sample.model.Weather
 import com.amber.sample.model.WeatherRow
-import com.amber.sample.repository.WeatherRepository
+import com.amber.sample.repository.WeatherUseCase
 import com.amber.sample.utils.Event
 import com.amber.sample.utils.Resource
 import kotlinx.coroutines.*
@@ -12,7 +11,7 @@ import kotlinx.coroutines.*
 //private const val TAG = "MainViewModel"
 
 class WeatherViewModel(
-    private val weatherRepository: WeatherRepository
+    private val weatherUseCase: WeatherUseCase
 ) : ViewModel() {
     private val _weatherListLiveData = MutableLiveData<List<WeatherRow>>()
     val weatherListLiveData: LiveData<List<WeatherRow>> = _weatherListLiveData
@@ -26,34 +25,17 @@ class WeatherViewModel(
     fun refreshWeather() {
         viewModelScope.launch {
             _refreshEvent.value = Event(State.Loading)
-            val weatherList = mutableListOf<WeatherRow>()
-            when (val localList = weatherRepository.getLocalList()) {
-                is Resource.Success ->
-                    with(localList.data!!) {
-                        map { async { weatherRepository.getWeather(it) } }
-                            .awaitAll()
-                            .forEach { resource ->
-                                resource.data?.let { weatherDTO ->
-                                    //Log.d(TAG, "weatherRow created")
-                                    weatherList.add(
-                                        WeatherRow(
-                                            weatherDTO.title,
-                                            weatherDTO.weatherList[0],
-                                            weatherDTO.weatherList[1]
-                                        )
-                                    )
-                                }
-                            }
+            val weatherList = weatherUseCase.getWeatherList()
 
-                        _refreshEvent.value = when {
-                            isEmpty() || (isNotEmpty() && weatherList.size == 0) -> Event(State.Failed(R.string.refresh_error))
-                            size > weatherList.size -> Event(State.Failed(R.string.refresh_some_error))
-                            else -> Event(State.Success)
-                        }
-                    }
-                is Resource.Error -> _refreshEvent.value = Event(State.Failed(R.string.refresh_error))
+            when (weatherList) {
+                is Resource.Success -> {
+                    _refreshEvent.value = Event(State.Success)
+                    weatherList.data?.let { _weatherListLiveData.value = it }
+                }
+                is Resource.Error -> {
+                    _refreshEvent.value = Event(State.Failed(R.string.refresh_error))
+                }
             }
-            _weatherListLiveData.value = weatherList
         }
     }
 
@@ -63,13 +45,13 @@ class WeatherViewModel(
 }
 
 class MainViewModelFactory(
-    private val weatherRepository: WeatherRepository
+    private val weatherUseCase: WeatherUseCase
 ) :
     ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(WeatherViewModel::class.java) -> WeatherViewModel(
-                weatherRepository
+                weatherUseCase
             ) as T
             else -> super.create(modelClass)
         }
